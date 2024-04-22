@@ -4,97 +4,92 @@
 
 using namespace std;
 
-// Function to calculate MNPN for a segment of the array
-int calculateMNPN(const vector<int>& arr, int i, int j) {
-    unordered_set<int> present;
-
-    // Mark numbers present in the segment
-    for (int k = i; k <= j; k++) {
-        present.insert(arr[k]);
-	}
-
-    // Find the smallest non-present number
-    int MNPN = 0;
-    while (present.count(MNPN) != 0) {
-        MNPN++;
-    }
-
-    return MNPN;
-}
 // Function to divide the array into segments with consistent MNPN
 pair<int, vector<pair<int, int>>> divideArray(const vector<int>& arr) {
     int n = arr.size();
-    int **dp = new int*[n];
-    for (int i = 0; i < n; i++) {
-        dp[i] = new int[n] {0};
-	}
+    int* dp1 = new int[n];
+    int* dp2 = new int[n];
 
     for (int i = 0; i < n; i++)
     {
-        for (int j = 0; j < n; j++)
-        {
-               dp[i][j]= calculateMNPN(arr, i, j);
-        }
+        cout << arr[i] << " ";
     }
+    cout << endl <<endl ; 
+
+    dp1[0] = (arr[0]) ? 0 : 1;
+    for (int k = 1; k < n; k++)
+    {
+        int MNPN = 0;
+        if (dp1[k - 1] < arr[k])
+            MNPN = dp1[k - 1];
+        else
+            MNPN = max(arr[k] + 1, dp1[k - 1]);
+
+        dp1[k] = MNPN;
+    }
+    dp2[n-1] = (arr[n-1]) ? 0 : 1;
+    for (int k = n-2; k >= 0; k--)
+    {
+        int MNPN = 0;
+        if (dp2[k + 1] < arr[k])
+            MNPN = dp2[k + 1];
+        else
+            MNPN = max(arr[k] + 1,dp2[k + 1]);
+
+        dp2[k] = MNPN;
+    }
+
+
     //print dp array
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-			cout<<dp[i][j]<<" ";
-		}
-		cout<<endl;
-	}
-    
+    for (int i = 0; i < n; i++)
+    {
+        cout << dp1[i] << " ";
+    }
+    cout << endl <<endl;
+
+    for (int i = 0; i < n; i++)
+    {
+        cout << dp2[i] << " ";
+    }
+
+    cout << endl << endl;
     vector<pair<int, int>> segmentRanges;
     int ind = 0;
     int count = 0;
+
     
-    for (int j = 0; j < n-1 && ind != n; j++) {
-        bool flag = 1;
-        for (int k = j + 1; k < n; k++)
+    for (int j = 0; j < (n - 1)/2; j++) 
+    {
+        if (dp1[j] == dp2[j])
         {
-            if (dp[j][k] != dp[ind][j])
-            {
-                flag = 0;
-                break;
-            }
-        }
-        if (flag == 1)
-        {
-            if (dp[j + 1][j + 2] != dp[ind][j] && j + 2 < n)
-            {
-				continue;
-			}
-            segmentRanges.push_back({ ind + 1, j + 1 });
-            ind = j + 1;
-            count++;
-        }
+			segmentRanges.push_back({ ind + 1,j+1 });
+            segmentRanges.push_back({ j+2,n });
+			ind = j + 1;
+			count++;
+            break;
+		}
     }
     
-    segmentRanges.push_back({ ind + 1, n });
-    count++;
-    
 
-    cout<<count<<endl;
-   
-    
-   
-	//free memory
-    for (int i = 0; i < n; i++) {
-		delete[] dp[i];
-	}
-	delete[] dp;
 
-    if (count <= 1)
+
+    //cout << count << endl;
+
+
+
+    //free memory
+
+    if (count < 1)
     {
         return { -1,segmentRanges };
     }
 
-    return {count, segmentRanges};
+    return { count, segmentRanges };
 }
 
 int main()
 {
-    vector<int> arr = {0,1,7,1,0,1,0,3};
+    vector<int> arr = { 1 ,2 ,3 ,4 ,5 };
 
     // Divide the array into segments with consistent MNPN
     pair<int, vector<pair<int, int>>> result = divideArray(arr);
