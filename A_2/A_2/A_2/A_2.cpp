@@ -4,101 +4,106 @@
 using namespace std;
 
 vector<int> depot; // Global variable to store depot values
-vector<vector<int>> memo; // Global variable to store memoization values
+vector<vector<vector<int>>> memo; // Global variable to store memoization values
 // Function to calculate strategic value
 int strategicValue(int i, int j) {
-	int sum = 0;
-    for (int k = i; k <= (j+i)/2; k++) {
+    int sum = 0;
+    for (int k = i; k <= j; k++)
+    {
+        int val = 0;
         for (int l = k + 1; l <= j; l++)
-            sum += depot[k] * depot[l];
-	}
-	return sum;
-}
-
-
-int minStrategicValue(int n, int m,int curr, int start, int end)// number of depots = N, number of attacks = M
-{
-    if (m == 0)
-    {
-        return strategicValue(curr, end);
+            val += depot[l];
+        val *= depot[k];
+        sum += val;
     }
-    else if (curr == n)
-    {
-		return INT16_MAX;
-	}
-    else
-    {
-       return min(minStrategicValue(n,m,curr+1,start,end), strategicValue(start, curr) + (minStrategicValue(n, m - 1, curr + 1, curr+1, end)));
-	}
+    //cout << "i: " << i << " j: " << j << " sum: " << sum << endl;
+    return sum;
 }
 
-int minStrategicValueTD(int n, int m, int curr, int start, int end) {
+
+int minStrategicValue(int n, int m, int curr, int start, int end) {
     if (m == 0) {
         return strategicValue(curr, end);
     }
-    if (curr == n) {
-        return INT16_MAX;
+    else if (curr == n) {
+        return INT16_MAX; // Return a large value for invalid cases
     }
-    if (memo[curr][m] != -1) {
-        return memo[curr][m];
+    else {
+        int attack_here = strategicValue(start, curr) + minStrategicValue(n, m - 1, curr + 1, curr + 1, end);
+        int skip_attack = minStrategicValue(n, m, curr + 1, start, end);
+        if (attack_here == INT_MIN)
+            attack_here = INT_MAX;
+        return min(attack_here, skip_attack);
     }
-
-    int minVal = strategicValue(start, curr) + minStrategicValueTD(n, m - 1, curr + 1, curr + 1, end);
-    minVal = min(minVal, minStrategicValueTD(n, m, curr + 1, start, end));
-
-    memo[curr][m] = minVal;
-    return minVal;
+}
+int minStrategicValueTD(int n, int m, int curr, int start, int end) {
+    // Base case: No attacks remaining
+    if (m == 0) {
+        return strategicValue(curr, end);
+    }
+    // Base case: Reached end of depots
+    else if (curr == n) {
+        return INT16_MAX; // Return a large value for invalid cases
+    }
+    // Check if the value is already computed
+    else if (memo[m][curr][start] != -1) {
+        return memo[m][curr][start];
+    }
+    else {
+        // Calculate strategic value if attack is made at the current position
+        int attack_here = strategicValue(start, curr) + minStrategicValueTD(n, m - 1, curr + 1, curr + 1, end);
+        // Calculate strategic value if attack is skipped at the current position
+        int skip_attack = minStrategicValueTD(n, m, curr + 1, start, end);
+        // Update memoization array
+        if (attack_here == INT_MIN) {
+            attack_here = INT_MAX;
+        }
+        memo[m][curr][start] = min(attack_here, skip_attack);
+        return memo[m][curr][start];
+    }
 }
 
-int minStrategicValueBU(int n, int m, int start, int end) {
-    vector<vector<int>> dp(n + 1, vector<int>(m + 1, INT_MAX));
 
-    // Base case when no attacks left
-    for (int i = 0; i <= n; ++i) {
-        dp[i][0] = strategicValue(i, end);
+int minStrategicValueBU(int n, int m, int end) {
+    // Initialize the DP array
+    std::vector<std::vector<std::vector<int>>> dp(n + 1, std::vector<std::vector<int>>(m + 1, std::vector<int>(n + 1, INT16_MAX)));
+
+    // Base case for no remaining attacks
+    for (int curr = 0; curr <= n; ++curr) {
+        for (int start = 0; start < n; ++start) {
+            dp[curr][0][start] = strategicValue(curr, end);
+        }
     }
 
-    // Initialize memoization for m = 1
-    for (int i = 0; i <= n; ++i) {
-        dp[i][1] = strategicValue(start, i);
+    // Base case when curr == n
+    for (int attack = 0; attack <= m; ++attack) {
+        for (int start = 0; start < n; ++start) {
+            dp[n][attack][start] = INT16_MAX;
+        }
     }
-    //print(dp);
-    for (int i = 0; i <= n; ++i) {
-        for (int j = 0; j <= m; ++j) {
-			cout << dp[i][j] << " ";
-		}
-		cout << endl;
-	}
 
-    // Bottom-up DP filling
-    for (int j = 1; j <= m; ++j) {
-        for (int i = 0; i <= n; ++i) {
-            for (int k = i + 1; k <= n; ++k) {
-                dp[i][j] = min(dp[i][j], strategicValue(i, k) + dp[k][j - 1]);
+    // Fill the DP table
+    for (int curr = n - 1; curr >= 0; --curr) {
+        for (int remainingAttacks = 1; remainingAttacks <= m; ++remainingAttacks) {
+            for (int start = 0; start <= curr; ++start) {
+                int attack_here = strategicValue(start, curr) + dp[curr + 1][remainingAttacks - 1][curr + 1];
+                int skip_attack = dp[curr + 1][remainingAttacks][start];
+                dp[curr][remainingAttacks][start] = std::min(attack_here, skip_attack);
             }
         }
     }
 
-    cout << endl << endl;
-    //print(dp);
-    for (int i = 0; i <= n; ++i) {
-        for (int j = 0; j <= m; ++j) {
-            cout << dp[i][j] << " ";
-        }
-        cout << endl;
-    }
-
-    return dp[start][m];
+    // The answer is the minimal strategic value starting from depot 0 with m attacks remaining
+    return dp[0][m][0];
 }
-
 int main() {
-    depot = { 4,5, 1, 2 }; // Initializing depot with given values
+    depot = { 4,5,2,1 }; // Initializing depot with given values
 
-    int n = depot.size() -1; // Number of depots
+    int n = depot.size() - 1; // Number of depots
     int m = 2; // Number of attacks (assuming 2 as given in the example)
-    memo.assign(n, vector<int>(m + 1, -1)); // Initializing memoization table with -1
+    memo.assign(m + 1, vector<vector<int>>(n + 1, vector<int>(n + 1, -1)));
 
-    int result = minStrategicValueBU(n,m,0,n);
+    int result = minStrategicValueBU(n, m, n);//, 0, 0, n);
     cout << result << endl;
     return 0;
 }
