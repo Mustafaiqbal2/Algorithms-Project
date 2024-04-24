@@ -100,7 +100,7 @@ int main() {
     depot = {8,5,4,8,7,3,6 }; // Initializing depot with given values
 
     int n = depot.size() - 1; // Number of depots
-    int m = 3; // Number of attacks (assuming 2 as given in the example)
+    int m = 1; // Number of attacks (assuming 2 as given in the example)
     memo.assign(m + 1, vector<vector<int>>(n + 1, vector<int>(n + 1, -1)));
 
     int result = minStrategicValueBU(n, m, n);//, 0, 0, n);
