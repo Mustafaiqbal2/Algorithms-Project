@@ -1,3 +1,153 @@
+//                  QUESTION 1
+Function countStructuresRecursive(n)
+    sum = 0
+    i = 0
+    while sum < n
+        i++
+        sum += i
+        End while
+        totalStructures = 0
+        for i = i to n
+            totalStructures += helperRecurse(n - i, i)
+            End for
+            Return totalStructures
+End Function
+
+Function helperRecurse(n, prevStage)
+    if n == 2 and n >= prevStage
+        Return 0
+    End if
+    if n == 3 and n < prevStage
+        Return 2
+        End if
+        if n < 3
+            Return 1
+            End if
+            totalStructures = 0
+            for i = min(prevStage - 1, n) to 2
+                totalStructures += helperRecurse(n - i, i)
+                End for
+                Return totalStructures
+    End Function
+
+Function countStructuresTD(n)
+    Initialize memoization table with -1
+    totalStructures = 0
+    for i = 2 to n
+        totalStructures += helperRecurseTD(n - i, i)
+    End for
+    Output memoization table
+    Return totalStructures
+End Function
+
+
+Function helperRecurseTD(n, prevStage)
+    if n == 2 and n >= prevStage
+        Return 0
+    End if
+    if n == 3 and n < prevStage
+        Return 2
+    End if
+    if n < 3
+        Return 1
+    End if
+    if memo[n][prevStage] is not -1
+        Return memo[n][prevStage]
+    End if
+    totalStructures = 0
+    for i = min(prevStage - 1, n) to 2
+        totalStructures += helperRecurseTD(n - i, i)
+    End for
+    memo[n][prevStage] = totalStructures
+    Return totalStructures
+End Function
+
+
+
+//                  QUESTION 2
+
+
+Function strategicValue(i, j)
+    sum = 0
+    for k = i to j
+        val = 0
+        for l = k + 1 to j
+            val += depot[l]
+        End for
+        val *= depot[k]
+        sum += val
+    End for
+    Return sum
+End Function
+
+
+Function minStrategicValue(n, m, curr, start, end)
+    If m == 0
+        Return strategicValue(curr, end)
+    Else if curr == n
+        Return INT16_MAX
+    Else
+        attack_here = strategicValue(start, curr) + minStrategicValue(n, m - 1, curr + 1, curr + 1, end)
+        skip_attack = minStrategicValue(n, m, curr + 1, start, end)
+        If attack_here == INT_MIN
+            attack_here = INT_MAX
+        End if
+        Return min(attack_here, skip_attack)
+    End if
+End Function
+
+
+Function minStrategicValueTD(n, m, curr, start, end)
+    If m == 0
+        Return strategicValue(curr, end)
+    Else if curr == n
+        Return INT16_MAX
+    Else if memo[m][curr][start] != -1
+        Return memo[m][curr][start]
+    Else
+        attack_here = strategicValue(start, curr) + minStrategicValueTD(n, m - 1, curr + 1, curr + 1, end)
+        skip_attack = minStrategicValueTD(n, m, curr + 1, start, end)
+        If attack_here == INT_MIN
+            attack_here = INT_MAX
+        End if
+        memo[m][curr][start] = min(attack_here, skip_attack)
+        Return memo[m][curr][start]
+    End if
+End Function
+
+
+Function minStrategicValueBU(n, m, end)
+    Initialize dp array with dimensions (n + 1) x (m + 1) x (n + 1) filled with INT16_MAX
+
+    For curr = 0 to n
+        For start = 0 to n - 1
+            dp[curr][0][start] = strategicValue(curr, end)
+        End for
+    End for
+
+    For attack = 0 to m
+        For start = 0 to n - 1
+            dp[n][attack][start] = INT16_MAX
+        End for
+    End for
+
+    For curr = n - 1 down to 0
+        For remainingAttacks = 1 to m
+            For start = 0 to curr
+                attack_here = strategicValue(start, curr) + dp[curr + 1][remainingAttacks - 1][curr + 1]
+                skip_attack = dp[curr + 1][remainingAttacks][start]
+                dp[curr][remainingAttacks][start] = min(attack_here, skip_attack)
+            End for
+        End for
+    End for
+
+    Return dp[0][m][0]
+End Function
+
+
+//                  QUESTION 3
+
+//                  QUESTION 4
 maxTeamPower(M, N, grid) :
     if M == 1 :
         // If only a single row, return the maximum element
