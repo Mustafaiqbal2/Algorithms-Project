@@ -18,7 +18,7 @@
     <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Q2.cpp">
+    <ClCompile Include="psuedocode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

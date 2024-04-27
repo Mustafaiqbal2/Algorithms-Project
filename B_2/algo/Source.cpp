@@ -49,6 +49,7 @@ int maxTeamPower(int M, int N, int** grid) {
     int prevmaxPower = 0;
 
     int lastcolmax = 0;
+    int lastcolprevmax = 0;
     for (int j = 1; j < N; ++j) 
     {
 
@@ -56,14 +57,16 @@ int maxTeamPower(int M, int N, int** grid) {
         {
             if (dp[i][j - 1] == mmax)
             {
-                if (lastcolmax + grid[i][j] > prevmax + grid[i][j])
+                if (lastcolmax!=dp[i][j - 1] && lastcolmax + grid[i][j] > prevmax + grid[i][j])
                     dp[i][j] = lastcolmax + grid[i][j];
+                else if (lastcolmax == dp[i][j - 1] && lastcolprevmax + grid[i][j] > prevmax + grid[i][j])
+                    dp[i][j] = lastcolprevmax + grid[i][j];
                 else
                     dp[i][j] = prevmax + grid[i][j];
             }
             else
             {
-                if (lastcolmax + grid[i][j] > mmax + grid[i][j])
+                if (lastcolmax != dp[i][j - 1] && lastcolmax + grid[i][j] > mmax + grid[i][j])
                     dp[i][j] = lastcolmax + grid[i][j];
                 else
                 dp[i][j] = mmax + grid[i][j];
@@ -96,6 +99,7 @@ int maxTeamPower(int M, int N, int** grid) {
         }
         if (prevmaxPower > prevmax)
         {
+            lastcolprevmax = prevmax;
             prevmax = prevmaxPower;
         }
     }
@@ -124,7 +128,7 @@ int maxTeamPower(int M, int N, int** grid) {
 
     return maxPower;
 }
-/*
+
 int main() {
     cout << endl;
 cout << "Enter input:" << endl;
@@ -154,4 +158,3 @@ cout << "Enter input:" << endl;
     return 0;
 }
 
-*/
