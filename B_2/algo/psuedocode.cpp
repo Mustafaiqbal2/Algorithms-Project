@@ -147,6 +147,58 @@ End Function
 
 //                  QUESTION 3
 
+dividearrayMNPN(arr) :
+    // Create a hashmap to store unique elements from the array
+            hash = create empty unordered set
+            n = size of arr
+
+            // Insert elements of arr into the hashmap
+            for i from 0 to n - 1:
+             hash.insert(arr[i])
+
+        // Calculate mnpn (minimum non-positive number) from the hashmap
+        mnpn = 0
+        while mnpn is found in hash :
+        mnpn++
+
+        // Output mnpn
+        output "mnpn: " + mnpn
+
+        // Initialize variables for counting and finding index
+        count = 0
+        index = -1
+        unique = create empty unordered set
+
+        // Iterate through the array elements before the mnpn
+        for i from 0 to n - 1:
+         if arr[i] < mnpn and arr[i] is not in unique :
+            increment count
+         if count is equal to mnpn :
+            set index to(i + 1)
+            break
+        insert arr[i] into unique
+
+        // Reset count and initialize another unique set
+        count = 0
+        unique1 = create empty unordered set
+
+        // Iterate through the array elements after the found index
+        for i from index to n - 1:
+            if arr[i] < mnpn and arr[i] is not in unique1 :
+            increment count
+        insert arr[i] into unique1
+
+        // Check if count equals mnpn after the found index
+        if count is equal to mnpn :
+    // Display the result when both segments meet the conditions
+        output "2"
+        output "[" + 1 + ", " + index + "]"
+        output "[" + (index + 1) + ", " + n + "]"
+        else:
+    // Display -1 when the conditions are not met
+        output "-1"
+
+
 //                  QUESTION 4
 maxTeamPower(M, N, grid) :
     if M == 1 :
