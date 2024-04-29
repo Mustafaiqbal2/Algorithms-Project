@@ -71,6 +71,7 @@ int minStrategicValueTD(int n, int m, int curr, int start, int end) {
 int minStrategicValueBU(int n, int m, int end) {
     // Initialize the DP array
     std::vector<std::vector<std::vector<int>>> dp(n + 1, std::vector<std::vector<int>>(m + 1, std::vector<int>(n + 1, INT16_MAX)));
+    std::vector<std::vector<int>> dp2(n + 1, std::vector<int>(n + 1));
 
     // Base case for no remaining attacks
     for (int curr = 0; curr <= n; ++curr) {
@@ -85,14 +86,74 @@ int minStrategicValueBU(int n, int m, int end) {
             dp[n][attack][n] = 0;
         }
     }
+    /*
+    //calculate all possible commulative sums
+    vector<vector<int>> cumulativeSum(n + 1, vector<int>(n + 1, 0));
+    for (int i = 0; i < n; i++)
+    {
+        for (int k = n; k > i; --k)
+        {
+            cumulativeSum[i][k] = depot[k] + (k + 1 <= n ? cumulativeSum[i][k + 1] : 0);
+        }
+    }
+    //
+    cout << endl;
+    for (int i = 0; i < n; i++)
+    {
+        for (int k = 0; k <= n; k++)
+        {
+            cout << cumulativeSum[i][k] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
 
+    //Preprocessing for Start to curr
+    for (int start = 0; start < n; start++)
+    {
+        int sum = 0;
+        for (int curr = start + 1; curr < n; curr++)
+        {
+            dp2[curr][start] = dp2[curr - 1][start] + depot[curr] * cumulativeSum[start][n - curr];
+        }
+    }
+    cout << '\n' << "DP2" << endl;
+    //Print dp2
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            cout << dp2[i][j] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
+    */
+	//Preprocessing for Start to curr
+    for (int start = 0; start < n; start++)
+	{
+	    for (int curr = start+1; curr < n; curr++)
+		{
+			dp2[curr][start] = strategicValue(start, curr);
+		}
+	}
+
+    //Print dp2
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			cout << dp2[i][j] << " ";
+		}
+		cout << endl;
+	}
     
 
     // Fill the DP table
     for (int curr = n - 1; curr >= 0; --curr) {
         for (int remainingAttacks = 1; remainingAttacks <= m; ++remainingAttacks) {
             for (int start = 0; start <= curr; ++start) {
-                int attack_here = strategicValue(start, curr) + dp[curr + 1][remainingAttacks - 1][curr + 1];
+                int attack_here = dp2[curr][start] + dp[curr + 1][remainingAttacks - 1][curr + 1];
                 int skip_attack = dp[curr + 1][remainingAttacks][start];
                 dp[curr][remainingAttacks][start] = std::min(attack_here, skip_attack);
             }
