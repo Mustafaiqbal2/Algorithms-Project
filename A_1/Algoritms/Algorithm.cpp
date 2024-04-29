@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 using namespace std;
 int memo[201][201];
@@ -127,7 +128,7 @@ int countStructuresTD(int n)
     return totalStructures;
 }
 //BOTTOM UP
-int countStructuresBU(int n) 
+int countStructuresBU(int n)
 {
     // Initialize the memoization table
     for (int i = 0; i <= n; ++i) {
@@ -150,11 +151,11 @@ int countStructuresBU(int n)
     }
     //printMemo(n);
     // Populate the memoization table iteratively
-    for (int i = 4; i <= n; ++i) 
+    for (int i = 4; i <= n; ++i)
     {
-        for (int j = 4; j <= n; ++j) 
+        for (int j = 4; j <= n; ++j)
         {
-            for (int k = 3; k <= min(j - 1, i); ++k) 
+            for (int k = 3; k <= min(j - 1, i); ++k)
             {
                 memo[i][j] += memo[i - k][k];
             }
@@ -164,6 +165,7 @@ int countStructuresBU(int n)
     // Calculate the total structure
     return memo[n][n];
 }
+
 
 int main()
 {

@@ -168,6 +168,46 @@ Function minStrategicValueBU(n, m, end)
     Return dp[0][m][0]
 End Function
 
+Initialize DP arrays dp and dp2
+Initialize cumulativeSum array
+
+// Base case initialization
+for curr from 0 to n:
+    for start from 0 to n:
+        dp[curr][0][start] = strategicValue(curr, end)
+
+for attack from 0 to m:
+    for start from 0 to n:
+        dp[n][attack][n] = 0
+
+// Calculate cumulative sums
+for i from 0 to n-1:
+    for k from i to n-1:
+        cumulativeSum[i][k] = depot[k] + (k > i ? cumulativeSum[i][k - 1] : 0)
+
+// Preprocessing for dp2
+for start from 0 to n-1:
+    for curr from start+1 to n-1:
+        dp2[curr][start] = dp2[curr - 1][start] + depot[curr] * cumulativeSum[start][curr - 1]
+
+// Fill the DP table
+for curr from n-1 down to 0:
+    for remainingAttacks from 1 to m:
+        for start from 0 to curr:
+            attack_here = dp2[curr][start] + dp[curr + 1][remainingAttacks - 1][curr + 1]
+            skip_attack = dp[curr + 1][remainingAttacks][start]
+            dp[curr][remainingAttacks][start] = min(attack_here, skip_attack)
+
+// Print DP table
+for rema from 0 to m:
+    for curr from 0 to n-1:
+        for start from 0 to n-1:
+            print dp[curr][rema][start]
+
+// Return result
+return dp[0][m][0]
+
+
 
 //                  QUESTION 3
 

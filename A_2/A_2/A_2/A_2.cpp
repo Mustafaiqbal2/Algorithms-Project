@@ -86,39 +86,41 @@ int minStrategicValueBU(int n, int m, int end) {
             dp[n][attack][n] = 0;
         }
     }
-    /*
-    //calculate all possible commulative sums
-    vector<vector<int>> cumulativeSum(n + 1, vector<int>(n + 1, 0));
+    //////////////////////////////////////////////////////////////////////////
+    // Calculate all possible cumulative sums
+    vector<vector<int>> cumulativeSum(n, vector<int>(n, 0));
     for (int i = 0; i < n; i++)
     {
-        for (int k = n; k > i; --k)
+        cumulativeSum[i][i] = depot[i];  // Base case: cumulative sum from i to i is depot[i]
+        for (int k = i + 1; k < n; k++)
         {
-            cumulativeSum[i][k] = depot[k] + (k + 1 <= n ? cumulativeSum[i][k + 1] : 0);
+            cumulativeSum[i][k] = cumulativeSum[i][k - 1] + depot[k];
         }
     }
-    //
-    cout << endl;
+
+    // Print cumulative sums
+    cout << "Cumulative Sums:" << endl;
     for (int i = 0; i < n; i++)
     {
-        for (int k = 0; k <= n; k++)
+        for (int k = i; k < n; k++)  // Only need to print from i to n
         {
             cout << cumulativeSum[i][k] << " ";
         }
         cout << endl;
     }
-    cout << endl;
 
-    //Preprocessing for Start to curr
+    // Preprocessing for dp2 (Start to curr)
     for (int start = 0; start < n; start++)
     {
-        int sum = 0;
+        dp2[start][start] = 0;  // Base case: no strategic value from start to itself
         for (int curr = start + 1; curr < n; curr++)
         {
-            dp2[curr][start] = dp2[curr - 1][start] + depot[curr] * cumulativeSum[start][n - curr];
+            dp2[curr][start] = dp2[curr - 1][start] + depot[curr] * cumulativeSum[start][curr - 1];
         }
     }
-    cout << '\n' << "DP2" << endl;
-    //Print dp2
+
+    // Print dp2
+    cout << '\n' << "DP2 (Strategic Values):" << endl;
     for (int i = 0; i < n; i++)
     {
         for (int j = 0; j < n; j++)
@@ -127,8 +129,8 @@ int minStrategicValueBU(int n, int m, int end) {
         }
         cout << endl;
     }
-    cout << endl;
-    */
+    ///////////////////////////////////////////////////////////
+    /*
 	//Preprocessing for Start to curr
     for (int start = 0; start < n; start++)
 	{
@@ -148,6 +150,7 @@ int minStrategicValueBU(int n, int m, int end) {
 		cout << endl;
 	}
     
+    */
 
     // Fill the DP table
     for (int curr = n - 1; curr >= 0; --curr) {
