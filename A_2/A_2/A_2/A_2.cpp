@@ -6,19 +6,23 @@ using namespace std;
 vector<int> depot; // Global variable to store depot values
 vector<vector<vector<int>>> memo; // Global variable to store memoization values
 // Function to calculate strategic value
-int strategicValue(int i, int j) {
-    int sum = 0;
-    for (int k = i; k <= j; k++)
-    {
-        int val = 0;
-        for (int l = k + 1; l <= j; l++)
-            val += depot[l];
-        val *= depot[k];
-        sum += val;
+int strategicValue(int i, int j)
+{
+    // Calculate cumulative sums of the depot array
+    vector<int> cumulativeSum(j + 1, 0);
+    for (int k = j; k >= i; --k) {
+        cumulativeSum[k] = depot[k] + (k + 1 <= j ? cumulativeSum[k + 1] : 0);
     }
-    //cout << "i: " << i << " j: " << j << " sum: " << sum << endl;
+
+    // Calculate strategic value using precomputed cumulative sums
+    int sum = 0;
+    for (int k = i + 1; k <= j; ++k) {
+        sum += depot[k-1] * cumulativeSum[k];
+    }
+
     return sum;
 }
+
 
 
 int minStrategicValue(int n, int m, int curr, int start, int end) {
@@ -74,13 +78,15 @@ int minStrategicValueBU(int n, int m, int end) {
             dp[curr][0][start] = strategicValue(curr, end);
         }
     }
-
+    
     // Base case when curr == n
     for (int attack = 0; attack <= m; ++attack) {
         for (int start = 0; start < n; ++start) {
-            dp[n][attack][start] = INT16_MAX;
+            dp[n][attack][n] = 0;
         }
     }
+
+    
 
     // Fill the DP table
     for (int curr = n - 1; curr >= 0; --curr) {
@@ -92,18 +98,42 @@ int minStrategicValueBU(int n, int m, int end) {
             }
         }
     }
+    //print
+    for (int rema = 0; rema <= m; rema++)
+    {
+        for (int curr = 0; curr < n; curr++)
+        {
+            for (int start = 0; start < n; start++)
+            {
+				cout << dp[curr][rema][start] << " ";
+            }
+			cout << endl;
+        }
+        cout << endl;
+    }
 
     // The answer is the minimal strategic value starting from depot 0 with m attacks remaining
     return dp[0][m][0];
 }
 int main() {
-    depot = { 4,5,2,1 }; // Initializing depot with given values
+    do
+    {
+        int n,m;
+        cin >> n >> m;
+        if (n == 0 && m == 0)
+            break;
+        for (int i = 0; i < n; i++)
+        {
+            int num;
+            cin >> num;
+            depot.push_back(num);
+        }
+        memo.assign(m + 1, vector<vector<int>>(n + 1, vector<int>(n + 1, -1)));
+        int result = minStrategicValueBU(n - 1, m , n - 1);//, 0, 0, n);
+        cout << result << endl;
+        depot.clear();
+    } 
+    while (1);
 
-    int n = depot.size() - 1; // Number of depots
-    int m = 2; // Number of attacks (assuming 2 as given in the example)
-    memo.assign(m + 1, vector<vector<int>>(n + 1, vector<int>(n + 1, -1)));
-
-    int result = minStrategicValueBU(n, m, n);//, 0, 0, n);
-    cout << result << endl;
     return 0;
 }

@@ -5,12 +5,12 @@ Function countStructuresRecursive(n)
     while sum < n
         i++
         sum += i
-        End while
-        totalStructures = 0
-        for i = i to n
-            totalStructures += helperRecurse(n - i, i)
-            End for
-            Return totalStructures
+    End while
+    totalStructures = 0
+    for i = i to n
+        totalStructures += helperRecurse(n - i, i)
+    End for
+    Return totalStructures
 End Function
 
 Function helperRecurse(n, prevStage)
@@ -19,15 +19,15 @@ Function helperRecurse(n, prevStage)
     End if
     if n == 3 and n < prevStage
         Return 2
-        End if
-        if n < 3
-            Return 1
-            End if
-            totalStructures = 0
-            for i = min(prevStage - 1, n) to 2
-                totalStructures += helperRecurse(n - i, i)
-                End for
-                Return totalStructures
+    End if
+    if n < 3
+        Return 1
+    End if
+    totalStructures = 0
+    for i = min(prevStage - 1, n) to 2
+        totalStructures += helperRecurse(n - i, i)
+    End for
+    Return totalStructures
     End Function
 
 Function countStructuresTD(n)
@@ -62,23 +62,47 @@ Function helperRecurseTD(n, prevStage)
     Return totalStructures
 End Function
 
+FUNCTION countStructuresBU(n) 
+    // Initialize the memoization table
+    for i = 0 TO N                          LOOP 1 = O(N)
+        if i > 0
+            memo[0][i] = 1;
+            if i > 1
+                memo[1][i] = 1;
+                if i > 2
+                    memo[2][i] = 1;
+                    if i > 3
+                        memo[3][i] = 2;
+                    else
+                        memo[3][i] = 1;
+                    END if
+                END if
+            END if
+        END if
+    END for
+	for i = 4 TO N 						LOOP 2 = O(N)
+		for j = 4 TO N 					LOOP 3 = O(N)
+			for k = 3 TO min(j - 1, i) 	LOOP 4 = O(N)
+                memo[i][j] += memo[i - k][k];
+            END for
+        END for
+    END for
+    return memo[n][n];
 
+	LOOP 1 + (LOOP 2 * LOOP 3 * LOOP 4) = O(N) + O(N) * O(N) * O(N) = O(N ^ 3)
 
 //                  QUESTION 2
 
 
-Function strategicValue(i, j)
+function strategicValue(i, j):
+    cumulativeSum = new Array(j + 1)
+    for k from j down to i:
+        cumulativeSum[k] = depot[k] + (k + 1 <= j ? cumulativeSum[k + 1] : 0)
     sum = 0
-    for k = i to j
-        val = 0
-        for l = k + 1 to j
-            val += depot[l]
-        End for
-        val *= depot[k]
-        sum += val
-    End for
-    Return sum
-End Function
+    for k from i + 1 to j:
+        sum += depot[k - 1] * cumulativeSum[k]
+    return sum
+
 
 
 Function minStrategicValue(n, m, curr, start, end)
@@ -202,34 +226,26 @@ dividearrayMNPN(arr) :
 //                  QUESTION 4
 maxTeamPower(M, N, grid) :
     if M == 1 :
-        // If only a single row, return the maximum element
         maxPower = 0
         for i from 0 to N - 1 :
             if grid[0][i] > maxPower:
 maxPower = grid[0][i]
 return maxPower
 
-// Dynamic programming array to store the maximum power achievable
 dp = allocate memory for 2D array of size M x N
 
-// Initialize the first column of dp with the first column of grid
 for i from 0 to M - 1:
 dp[i][0] = grid[i][0]
 
-// Initialize variables to keep track of maximum and second maximum power in the previous column
 mmax = 0
 prevmax = 0
 
-// Update mmax and prevmax based on the first column of grid
 for i from 0 to M - 1:
     if dp[i][0] > mmax:
         prevmax = mmax
         mmax = dp[i][0]
     else if dp[i][0] > prevmax:
         prevmax = dp[i][0]
-
-// Iterate over each cell starting from the second column
-// Initialize variables to keep track of maximum and second maximum power in the current column
 int maxPower = 0;
 int prevmaxPower = 0;
 int lastcolmax = 0;
@@ -250,7 +266,6 @@ for j from 1 to N - 1:
             else :
                 dp[i][j] = mmax + grid[i][j]
 
-    // Update max and second max
     maxPower = 0
     prevmaxPower = 0
     for i from 0 to M - 1:
@@ -268,15 +283,12 @@ for j from 1 to N - 1:
         prevmax = prevmaxPower
 
  
-// Find the maximum power achievable from the last column
 maxPpower = 0
 for i from 0 to M - 1:
     maxPpower = max(maxPpower, dp[i][N - 1]);
 
-    // Deallocate memory for dp
     deallocate memory for dp
 
-        // Return the maximum power achievable
 return maxPpower
 
 END
