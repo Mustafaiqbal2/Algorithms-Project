@@ -69,9 +69,3 @@ Contributions are welcome! If you have an algorithm to add or an improvement to 
 - Ensure your code follows the coding standards used in this project.
 - Include comments and documentation for your code.
 - Test your code thoroughly.
-
-## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-```
-
-Feel free to modify the content as per your project's requirements. Note that the above file structure and algorithms included are based on the C++ files found in your repository.
